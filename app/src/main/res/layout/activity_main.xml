@@ -36,11 +36,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/micbutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/button_ripple"
+                android:padding="16dp"
+                android:src="@drawable/ic_mic_black_24px" />
+
             <View
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
-            
+
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

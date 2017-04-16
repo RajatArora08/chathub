@@ -16,6 +16,7 @@
 package edu.sfsu.csc780.chathub.ui;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -23,6 +24,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 
@@ -42,6 +44,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -54,6 +57,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import java.util.ArrayList;
+import java.util.Locale;
 
 import edu.sfsu.csc780.chathub.ImageUtil;
 import edu.sfsu.csc780.chathub.LocationUtils;
@@ -71,7 +77,7 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "MainActivity";
     public static final String MESSAGES_CHILD = "messages";
     private static final int REQUEST_INVITE = 1;
-    public static final int MSG_LENGTH_LIMIT = 10;
+    public static final int MSG_LENGTH_LIMIT = 50;
     public static final String ANONYMOUS = "anonymous";
     private static final int REQUEST_PICK_IMAGE = 1;
     private String mUsername;
@@ -93,6 +99,8 @@ public class MainActivity extends AppCompatActivity
     private FirebaseRecyclerAdapter<ChatMessage, MessageUtil.MessageViewHolder>
             mFirebaseAdapter;
     private ImageButton mImageButton;
+    private ImageButton mMicButton;
+    public static final int RESULT_SPEECH = 200;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,6 +197,14 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        mMicButton = (ImageButton) findViewById(R.id.micbutton);
+        mMicButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                speechProcess();
+            }
+        });
+
     }
 
     @Override
@@ -257,6 +273,19 @@ public class MainActivity extends AppCompatActivity
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
         if (isGranted && requestCode == LocationUtils.REQUEST_CODE) {
             LocationUtils.startLocationUpdates(this);
+        }
+    }
+
+    private void speechProcess() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US");
+//        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Say your message");
+
+        try {
+            startActivityForResult(intent, RESULT_SPEECH);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, "Intent problem", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -353,6 +382,19 @@ public class MainActivity extends AppCompatActivity
             }  else {
                 Log.e(TAG, "Cannot get image for uploading");
             }
+        }
+
+        if (requestCode == RESULT_SPEECH && resultCode == Activity.RESULT_OK) {
+
+            ArrayList<String> out = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+
+            ChatMessage chatMessage = new
+                    ChatMessage(out.get(0),
+                    mUsername,
+                    mPhotoUrl);
+
+            MessageUtil.send(chatMessage);
+
         }
     }
 
