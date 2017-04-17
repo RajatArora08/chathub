@@ -4,4 +4,6 @@
     <string name="sign_out">Sign Out</string>
     <string name="contacts_permission_rationale">Access to account information is required to sign in.</string>
     <string name="sign_in">Sign In</string>
+    <string name="background_change">Change Background</string>
+    <string name="change_background">Change background</string>
 </resources>
