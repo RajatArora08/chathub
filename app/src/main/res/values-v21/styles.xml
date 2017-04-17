@@ -1,14 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <!--<item name="colorPrimary">@color/colorPrimary</item>-->
+        <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+        <!--<item name="colorAccent">@color/colorAccent</item>-->
 
         <item name="android:colorButtonNormal">@drawable/button_selector</item>
         <item name="colorButtonNormal">@drawable/button_selector</item>
         <item name="android:buttonStyle">@style/ChatHubButtonStyle</item>
+        <item name="micButtonStyle">@drawable/ic_mic_black_24px</item>
+        <item name="locButtonStyle">@drawable/ic_my_location_black_24px</item>
+        <item name="imageButtonStyle">@drawable/ic_image_black_24px</item>
+        <item name="sendButtonStyle">@drawable/ic_send_black_24</item>
+        <item name="backgroundButtonStyle">@drawable/ic_wallpaper_black_24px</item>
+        <item name="changeModeStyle">@drawable/ic_brightness_7_black_24px</item>
+
     </style>
+
+    <style name="AppThemeNight" parent="Theme.AppCompat">
+        <!-- Customize your theme here. -->
+        <!--<item name="colorPrimary">@color/colorPrimary</item>-->
+        <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+        <!--<item name="colorAccent">@color/colorAccent</item>-->
+
+        <item name="android:colorButtonNormal">@drawable/button_selector</item>
+        <item name="colorButtonNormal">@drawable/button_selector</item>
+        <item name="android:buttonStyle">@style/ChatHubButtonStyle</item>
+        <item name="micButtonStyle">@drawable/ic_mic_white_24px</item>
+        <item name="locButtonStyle">@drawable/ic_my_location_white_24px</item>
+        <item name="imageButtonStyle">@drawable/ic_image_white_24px</item>
+        <item name="sendButtonStyle">@drawable/ic_send_white_24px</item>
+        <item name="backgroundButtonStyle">@drawable/ic_wallpaper_white_24px</item>
+        <item name="changeModeStyle">@drawable/ic_brightness_3_white_24px</item>
+
+    </style>
+
 </resources>

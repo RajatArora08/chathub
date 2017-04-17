@@ -33,6 +33,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -105,10 +106,23 @@ public class MainActivity extends AppCompatActivity
     private ImageButton mImageButton;
     private ImageButton mMicButton;
     public static final int RESULT_SPEECH = 200;
+    int dayNightMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        dayNightMode = AppCompatDelegate.getDefaultNightMode();
+        if (dayNightMode == AppCompatDelegate.MODE_NIGHT_AUTO) {
+            setTheme(R.style.AppTheme);
+        }
+        else if(dayNightMode == AppCompatDelegate.MODE_NIGHT_NO) {
+            setTheme(R.style.AppTheme);
+        }
+        else {
+            setTheme(R.style.AppThemeNight);
+        }
+
         setContentView(R.layout.activity_main);
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         // Set default username is anonymous.
@@ -251,7 +265,7 @@ public class MainActivity extends AppCompatActivity
                 mUsername = ANONYMOUS;
                 startActivity(new Intent(this, SignInActivity.class));
                 return true;
-            case R.id.background_change_menu:
+            case R.id.change_mode_menu:
                 changeBackground();
                 return true;
             default:
@@ -261,9 +275,17 @@ public class MainActivity extends AppCompatActivity
 
     private void changeBackground() {
 
-        findViewById(R.id.mainLayout).setBackgroundColor(getResources().getColor(R.color.colorNightMode));
-        mMicButton.setImageResource(R.drawable.ic_mic_white_24px);
+        if (dayNightMode == AppCompatDelegate.MODE_NIGHT_AUTO ||
+                dayNightMode == AppCompatDelegate.MODE_NIGHT_NO ) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+        else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
 
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override

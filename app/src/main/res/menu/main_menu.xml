@@ -2,9 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/change_mode_menu"
+        android:title="@string/change_mode"
+        android:icon="?attr/changeModeStyle"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/background_change_menu"
         android:title="@string/change_background"
-        android:icon="@drawable/ic_wallpaper_black_24px"
+        android:icon="?attr/backgroundButtonStyle"
         app:showAsAction="ifRoom"/>
 
     <item

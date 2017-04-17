@@ -6,4 +6,5 @@
     <string name="sign_in">Sign In</string>
     <string name="background_change">Change Background</string>
     <string name="change_background">Change background</string>
+    <string name="change_mode">Day/Night Mode</string>
 </resources>
