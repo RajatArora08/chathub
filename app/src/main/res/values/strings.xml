@@ -7,4 +7,6 @@
     <string name="background_change">Change Background</string>
     <string name="change_background">Change background</string>
     <string name="change_mode">Day/Night Mode</string>
+    <string name="choose_wallpaper">Choose from Images</string>
+    <string name="reset_wallpaper">Remove Wallpaper</string>
 </resources>

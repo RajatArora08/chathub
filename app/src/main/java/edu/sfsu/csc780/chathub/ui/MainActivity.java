@@ -21,9 +21,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
@@ -35,6 +37,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -66,6 +69,7 @@ import com.google.firebase.storage.UploadTask;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import edu.sfsu.csc780.chathub.BackgroundUtils;
 import edu.sfsu.csc780.chathub.ImageUtil;
 import edu.sfsu.csc780.chathub.LocationUtils;
 import edu.sfsu.csc780.chathub.MapLoader;
@@ -77,7 +81,7 @@ import edu.sfsu.csc780.chathub.ui.SignInActivity;
 import static edu.sfsu.csc780.chathub.ImageUtil.savePhotoImage;
 
 public class MainActivity extends AppCompatActivity
-        implements GoogleApiClient.OnConnectionFailedListener, MessageUtil.MessageLoadListener  {
+        implements GoogleApiClient.OnConnectionFailedListener, MessageUtil.MessageLoadListener, PopupMenu.OnMenuItemClickListener {
 
     private static final String TAG = "MainActivity";
     public static final String MESSAGES_CHILD = "messages";
@@ -105,8 +109,10 @@ public class MainActivity extends AppCompatActivity
             mFirebaseAdapter;
     private ImageButton mImageButton;
     private ImageButton mMicButton;
-    public static final int RESULT_SPEECH = 200;
     int dayNightMode;
+    public static final int RESULT_SPEECH = 200;
+    private static final int REQUEST_PICK_WALLPAPER = 300;
+    private RelativeLayout mRelativeLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,7 +130,16 @@ public class MainActivity extends AppCompatActivity
         }
 
         setContentView(R.layout.activity_main);
+        mRelativeLayout = (RelativeLayout) findViewById(R.id.mainLayout);
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String wallpaperUri = mSharedPreferences.getString("wallpaperPath", null);
+
+        if (wallpaperUri != null) {
+            Bitmap bitmap = ImageUtil.getBitmapForUri(this, Uri.parse(wallpaperUri));
+            changeWallpaper(bitmap);
+        }
+
         // Set default username is anonymous.
         mUsername = ANONYMOUS;
         //Initialize Auth
@@ -186,7 +201,6 @@ public class MainActivity extends AppCompatActivity
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Send messages on click.
                 //Send messages on click.
                 mMessageRecyclerView.scrollToPosition(0);
                 ChatMessage chatMessage = new
@@ -202,7 +216,7 @@ public class MainActivity extends AppCompatActivity
         mImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pickImage();
+                pickImage(REQUEST_PICK_IMAGE);
             }
         });
 
@@ -250,6 +264,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
@@ -266,14 +287,43 @@ public class MainActivity extends AppCompatActivity
                 startActivity(new Intent(this, SignInActivity.class));
                 return true;
             case R.id.change_mode_menu:
-                changeBackground();
+                switchMode();
+                return true;
+            case R.id.background_change_menu:
+                showWallpaperMenu();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private void changeBackground() {
+    private void showWallpaperMenu () {
+        PopupMenu popupMenu = new PopupMenu(this, findViewById(R.id.background_change_menu));
+        popupMenu.setOnMenuItemClickListener(this);
+        MenuInflater menuInflater = popupMenu.getMenuInflater();
+        menuInflater.inflate(R.menu.wallpaper_menu, popupMenu.getMenu());
+        popupMenu.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.resetWallpaper:
+                mRelativeLayout.setBackgroundResource(0);
+                mSharedPreferences.edit().remove("wallpaperPath").commit();
+                return true;
+            case R.id.chooseWallpaper:
+                pickImage(REQUEST_PICK_WALLPAPER);
+                return true;
+            default:
+                return false;
+
+        }
+
+ }
+
+    private void switchMode() {
 
         if (dayNightMode == AppCompatDelegate.MODE_NIGHT_AUTO ||
                 dayNightMode == AppCompatDelegate.MODE_NIGHT_NO ) {
@@ -283,9 +333,11 @@ public class MainActivity extends AppCompatActivity
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
 
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+//        Intent intent = new Intent(this, MainActivity.class);
+//        startActivity(intent);
+//        finish();
         finish();
+        startActivity(getIntent());
     }
 
     @Override
@@ -315,7 +367,6 @@ public class MainActivity extends AppCompatActivity
     private void speechProcess() {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US");
-//        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH);
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Say your message");
 
         try {
@@ -325,7 +376,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void pickImage() {
+    private void pickImage(int requestCode) {
         // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file browser
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
 
@@ -335,7 +386,7 @@ public class MainActivity extends AppCompatActivity
         // Filter to show only images, using the image MIME data type.
         intent.setType("image/*");
 
-        startActivityForResult(intent, REQUEST_PICK_IMAGE);
+        startActivityForResult(intent, requestCode);
 
     }
 
@@ -432,6 +483,28 @@ public class MainActivity extends AppCompatActivity
             MessageUtil.send(chatMessage);
 
         }
+
+        if (requestCode == REQUEST_PICK_WALLPAPER && resultCode == Activity.RESULT_OK) {
+
+            if (data != null) {
+                Uri uri = data.getData();
+                Log.i(TAG, "Uri: " + uri.toString());
+
+                // Resize if too big for messaging
+                Bitmap bitmap = ImageUtil.getBitmapForUri(this, uri);
+                BackgroundUtils.saveWallpaper(this, uri);
+
+                changeWallpaper(bitmap);
+            }
+
+        }
+    }
+
+    private void changeWallpaper(Bitmap bitmap) {
+
+        Drawable drawable = new BitmapDrawable(getResources(),bitmap);
+        mRelativeLayout.setBackground(drawable);
+
     }
 
     private void createImageMessage(Uri uri) {
@@ -457,4 +530,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
+
+
 }
