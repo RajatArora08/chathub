@@ -6,5 +6,6 @@
     <attr name="sendButtonStyle" format="reference"/>
     <attr name="backgroundButtonStyle" format="reference"/>
     <attr name="changeModeStyle" format="reference"/>
+    <attr name="canvasStyle" format="reference"/>
 
 </resources>

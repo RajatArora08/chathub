@@ -24,6 +24,7 @@
         </activity>
 
         <activity android:name="edu.sfsu.csc780.chathub.ui.SignInActivity" />
+        <activity android:name="edu.sfsu.csc780.chathub.ui.PaintActivity" />
 
     </application>
 

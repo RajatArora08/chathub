@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity
     private ProgressBar mProgressBar;
     private EditText mMessageEditText;
     private ImageButton mLocationButton;
+    private ImageButton mPaintButton;
 
     // Firebase instance variables
     private FirebaseAuth mAuth;
@@ -234,6 +235,16 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 speechProcess();
+            }
+        });
+
+        mPaintButton = (ImageButton) findViewById(R.id.paintButton);
+        mPaintButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, PaintActivity.class);
+                startActivity(intent);
             }
         });
 
