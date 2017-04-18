@@ -11,6 +11,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import edu.sfsu.csc780.chathub.ImageUtil;
+
 /**
  * Created by rajatar08 on 4/17/17.
  */
@@ -45,10 +47,19 @@ public class PaintScreenView extends View {
     }
 
     @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+
+        mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
         canvas.drawPath(mPath, mPaint);
+        canvas.drawBitmap(mBitmap, 0, 0, null);
 
     }
 

@@ -9,4 +9,5 @@
     <string name="change_mode">Day/Night Mode</string>
     <string name="choose_wallpaper">Choose from Images</string>
     <string name="reset_wallpaper">Remove Wallpaper</string>
+    <string name="choose_color">Choose color</string>
 </resources>

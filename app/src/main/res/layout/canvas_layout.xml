@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/paintColor">
+    android:layout_height="match_parent">
 
     <edu.sfsu.csc780.chathub.ui.PaintScreenView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:id="@+id/canvasView"/>
+        android:id="@+id/canvasView"
+        android:background="@color/paintColor"/>
 
     <Button
         android:id="@+id/clearButton"
@@ -21,13 +21,14 @@
         android:onClick="clearCanvas"/>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/sendButton"
+        android:id="@+id/sendPaintButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:src="@drawable/ic_send_black_24"
         android:layout_alignTop="@+id/clearButton"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:onClick="sendCanvasImage" />
 
 
 </RelativeLayout>

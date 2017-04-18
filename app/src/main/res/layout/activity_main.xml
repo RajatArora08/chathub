@@ -44,7 +44,8 @@
                 android:layout_gravity="center"
                 android:background="@drawable/button_ripple"
                 android:padding="16dp"
-                android:src="?attr/micButtonStyle" />
+                android:src="?attr/micButtonStyle"
+                />
 
             <View
                 android:layout_width="0dp"

@@ -113,6 +113,7 @@ public class MainActivity extends AppCompatActivity
     int dayNightMode;
     public static final int RESULT_SPEECH = 200;
     private static final int REQUEST_PICK_WALLPAPER = 300;
+    private static final int RESULT_PAINT = 400;
     private RelativeLayout mRelativeLayout;
 
     @Override
@@ -244,7 +245,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, PaintActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, RESULT_PAINT);
             }
         });
 
@@ -344,9 +345,6 @@ public class MainActivity extends AppCompatActivity
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
 
-//        Intent intent = new Intent(this, MainActivity.class);
-//        startActivity(intent);
-//        finish();
         finish();
         startActivity(getIntent());
     }
@@ -506,6 +504,15 @@ public class MainActivity extends AppCompatActivity
                 BackgroundUtils.saveWallpaper(this, uri);
 
                 changeWallpaper(bitmap);
+            }
+
+        }
+
+        if (requestCode == RESULT_PAINT && resultCode == Activity.RESULT_OK) {
+
+            if (data!=null) {
+                Uri resultURI = Uri.parse(data.getStringExtra("PaintImageURI"));
+                createImageMessage(resultURI);
             }
 
         }
