@@ -6,11 +6,16 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
+
+import com.thebluealliance.spectrum.SpectrumDialog;
 
 import edu.sfsu.csc780.chathub.ImageUtil;
 import edu.sfsu.csc780.chathub.R;
@@ -60,5 +65,25 @@ public class PaintActivity extends AppCompatActivity {
         intent.putExtra("PaintImageURI", uri.toString());
         setResult(Activity.RESULT_OK, intent);
         finish();
+    }
+
+    public void colorDialog(MenuItem item) {
+
+
+        new SpectrumDialog.Builder(this)
+                .setColors(R.array.demo_colors)
+                .setSelectedColorRes(R.color.color_3)
+                .setDismissOnColorSelected(true)
+                .setOutlineWidth(2)
+                .setOnColorSelectedListener(new SpectrumDialog.OnColorSelectedListener() {
+                    @Override
+                    public void onColorSelected(
+                            boolean positiveResult, @ColorInt int color) {
+                        if (positiveResult) {
+                            mPaintScreenView.changeColor(color);
+                        }
+                    }
+                }).build().show(this.getSupportFragmentManager(), "color_dialog");
+
     }
 }

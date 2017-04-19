@@ -10,6 +10,9 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 import edu.sfsu.csc780.chathub.ImageUtil;
 
@@ -31,19 +34,26 @@ public class PaintScreenView extends View {
     public PaintScreenView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
-        mPaint = new Paint();
-        setPaintAttributes();
+        mPaint = setPaintAttributes(Color.BLACK);
 
         mPath = new Path();
 
     }
 
-    public void setPaintAttributes() {
-        mPaint.setAntiAlias(true);
-        mPaint.setColor(Color.BLUE);
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeJoin(Paint.Join.ROUND);
-        mPaint.setStrokeWidth(10f);
+    public Paint setPaintAttributes(int color) {
+
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(color);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeJoin(Paint.Join.ROUND);
+        paint.setStrokeWidth(10f);
+
+        return paint;
+    }
+
+    public void changeColor(int color) {
+        mPaint = setPaintAttributes(color);
     }
 
     @Override
@@ -51,6 +61,7 @@ public class PaintScreenView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
 
         mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        mCanvas = new Canvas(mBitmap);
 
     }
 
@@ -73,13 +84,15 @@ public class PaintScreenView extends View {
 
             case MotionEvent.ACTION_DOWN:
                 mPath.moveTo(locX, locY);
-                return true;
+                break;
 
             case MotionEvent.ACTION_MOVE:
                 mPath.lineTo(locX, locY);
                 break;
 
             case MotionEvent.ACTION_UP:
+                mCanvas.drawPath(mPath, mPaint);
+                mPath.reset();
                 break;
 
         }
@@ -89,7 +102,8 @@ public class PaintScreenView extends View {
     }
 
     public void clearCanvas() {
-        mPath.reset();
+        mCanvas.drawColor(Color.WHITE);
         invalidate();
+        Toast.makeText(getContext(), "Screen cleared!!", Toast.LENGTH_SHORT).show();
     }
 }
