@@ -43,6 +43,7 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -65,6 +66,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.raizlabs.android.dbflow.config.FlowManager;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -93,6 +95,7 @@ public class MainActivity extends AppCompatActivity
     private String mPhotoUrl;
     private SharedPreferences mSharedPreferences;
     private GoogleApiClient mGoogleApiClient;
+    public static boolean action_mode = false;
 
     private FloatingActionButton mSendButton;
     private RecyclerView mMessageRecyclerView;
@@ -161,6 +164,8 @@ public class MainActivity extends AppCompatActivity
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
                 .build();
+
+        FlowManager.init(this);
 
         // Initialize ProgressBar and RecyclerView.
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -278,8 +283,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
-
     }
 
     @Override
@@ -304,9 +307,22 @@ public class MainActivity extends AppCompatActivity
             case R.id.background_change_menu:
                 showWallpaperMenu();
                 return true;
+            case R.id.star_message:
+                starMessages();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void starMessages() {
+
+//        Toast.makeText(this, MessageUtil.selectedMessages.toString(), Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(MainActivity.this, StarMessagesActivity.class);
+//        intent.putExtra("STAR_MESSAGES", MessageUtil.selectedMessages);
+        startActivity(intent);
+
     }
 
     private void showWallpaperMenu () {
@@ -544,10 +560,21 @@ public class MainActivity extends AppCompatActivity
                         mUsername,
                         mPhotoUrl, imageReference.toString());
                 MessageUtil.send(chatMessage);
+
                 mMessageEditText.setText("");
             }
         });
     }
+
+    /*
+    private static ArrayList<ChatMessage> selectedList = new ArrayList<>();
+    public void addToSelected(View v, int position) {
+
+        selectedList.add(mFirebaseAdapter.getItem(position));
+        Toast.makeText(this, "Selected: " + mFirebaseAdapter.getRef(position).getKey(), Toast.LENGTH_SHORT).show();
+
+    }
+    */
 
 
 }

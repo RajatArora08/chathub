@@ -17,6 +17,7 @@
         <item name="backgroundButtonStyle">@drawable/ic_wallpaper_black_24px</item>
         <item name="changeModeStyle">@drawable/ic_brightness_7_black_24px</item>
         <item name="canvasStyle">@drawable/ic_brush_black_24px</item>
+        <item name="starMessage">@drawable/ic_stars_black_24px</item>
 
 
     </style>
@@ -37,6 +38,8 @@
         <item name="backgroundButtonStyle">@drawable/ic_wallpaper_white_24px</item>
         <item name="changeModeStyle">@drawable/ic_brightness_3_white_24px</item>
         <item name="canvasStyle">@drawable/ic_brush_white_24px</item>
+        <item name="starMessage">@drawable/ic_stars_white_24px</item>
+
 
     </style>
 

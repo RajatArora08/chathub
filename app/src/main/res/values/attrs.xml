@@ -7,5 +7,6 @@
     <attr name="backgroundButtonStyle" format="reference"/>
     <attr name="changeModeStyle" format="reference"/>
     <attr name="canvasStyle" format="reference"/>
+    <attr name="starMessage" format="reference"/>
 
 </resources>
