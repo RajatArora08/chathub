@@ -8,6 +8,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
     <application
         android:allowBackup="true"
@@ -26,7 +27,10 @@
         <activity android:name="edu.sfsu.csc780.chathub.ui.SignInActivity" />
         <activity android:name="edu.sfsu.csc780.chathub.ui.PaintActivity" />
         <activity android:name="edu.sfsu.csc780.chathub.ui.StarMessagesActivity" />
-
+        
+        <service android:name=".service.FloatingWidgetService"
+            android:enabled="true"
+            android:exported="false" />
 
     </application>
 

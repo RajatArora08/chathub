@@ -32,7 +32,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
@@ -43,7 +42,6 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -52,14 +50,12 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.data.DataBuffer;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -69,7 +65,6 @@ import com.google.firebase.storage.UploadTask;
 import com.raizlabs.android.dbflow.config.FlowManager;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import edu.sfsu.csc780.chathub.BackgroundUtils;
 import edu.sfsu.csc780.chathub.ImageUtil;
@@ -77,8 +72,9 @@ import edu.sfsu.csc780.chathub.LocationUtils;
 import edu.sfsu.csc780.chathub.MapLoader;
 import edu.sfsu.csc780.chathub.MessageUtil;
 import edu.sfsu.csc780.chathub.R;
+import edu.sfsu.csc780.chathub.WidgetUtils;
 import edu.sfsu.csc780.chathub.model.ChatMessage;
-import edu.sfsu.csc780.chathub.ui.SignInActivity;
+import edu.sfsu.csc780.chathub.service.FloatingWidgetService;
 
 import static edu.sfsu.csc780.chathub.ImageUtil.savePhotoImage;
 
@@ -167,6 +163,13 @@ public class MainActivity extends AppCompatActivity
 
         FlowManager.init(this);
 
+        if (getIntent().getExtras() != null && getIntent().getExtras().containsKey("voice_message_widget"))
+        {
+            if ((boolean)getIntent().getExtras().get("voice_message_widget")) {
+                speechProcess();
+            }
+        }
+
         // Initialize ProgressBar and RecyclerView.
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mMessageRecyclerView = (RecyclerView) findViewById(R.id.messageRecyclerView);
@@ -254,13 +257,13 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        WidgetUtils.checkScreenOverlayPermission(this);
+
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in.
-        // TODO: Add code to check if user is signed in.
     }
 
     @Override
@@ -278,6 +281,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        this.startService(new Intent(this, FloatingWidgetService.class));
+        super.onBackPressed();
+
     }
 
     @Override
@@ -386,6 +397,9 @@ public class MainActivity extends AppCompatActivity
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
         if (isGranted && requestCode == LocationUtils.REQUEST_CODE) {
             LocationUtils.startLocationUpdates(this);
+        }
+        if (isGranted && requestCode == WidgetUtils.REQUEST_CODE) {
+
         }
     }
 
@@ -532,6 +546,11 @@ public class MainActivity extends AppCompatActivity
             }
 
         }
+
+        if (requestCode == WidgetUtils.REQUEST_CODE && resultCode != Activity.RESULT_OK) {
+            Toast.makeText(this, "Screen overlay permission not granted", Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
     private void changeWallpaper(Bitmap bitmap) {
@@ -565,16 +584,5 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
-
-    /*
-    private static ArrayList<ChatMessage> selectedList = new ArrayList<>();
-    public void addToSelected(View v, int position) {
-
-        selectedList.add(mFirebaseAdapter.getItem(position));
-        Toast.makeText(this, "Selected: " + mFirebaseAdapter.getRef(position).getKey(), Toast.LENGTH_SHORT).show();
-
-    }
-    */
-
 
 }
