@@ -13,10 +13,12 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.HapticFeedbackConstants;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -66,6 +68,7 @@ public class MessageUtil {
     public static HashMap<String, ChatMessage> selectedMessages = new HashMap<>();
     private static boolean is_action_mode = false;
     private static Context mContext;
+    private static FirebaseRecyclerAdapter mAdapter;
 
     public interface MessageLoadListener { public void onLoadComplete(); }
 
@@ -97,12 +100,37 @@ public class MessageUtil {
                                                              final RecyclerView recyclerView) {
         sAdapterListener = listener;
         mContext = activity;
-        final FirebaseRecyclerAdapter adapter =
+        mAdapter =
                 new FirebaseRecyclerAdapter<ChatMessage, MessageViewHolder>(
                         ChatMessage.class,
                         R.layout.item_message,
                         MessageViewHolder.class,
                         sFirebaseDatabaseReference.child(MESSAGES_CHILD)) {
+
+                    @Override
+                    public MessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+                        View view;
+
+                        if (viewType == 1) {
+                            view = LayoutInflater.from(mContext).inflate(R.layout.item_message_me, parent, false);
+                        }
+                        else {
+                            view = LayoutInflater.from(mContext).inflate(R.layout.item_message, parent, false);
+                        }
+
+                        return new MessageViewHolder(view);
+                    }
+
+                    @Override
+                    public int getItemViewType(int position) {
+                        if (FirebaseAuth.getInstance().getCurrentUser().getDisplayName()
+                                .equals(getItem(position).getName())){
+                            return 1;
+                        }
+                        else return 2;
+
+                    }
 
                     @Override
                     protected void populateViewHolder(final MessageViewHolder viewHolder,
@@ -125,10 +153,12 @@ public class MessageUtil {
                                 {
                                     selectMessage(view, getRef(position).getKey(), getItem(position));
                                     view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                                    is_action_mode = true;
+                                    if(!is_action_mode) {
+                                        activity.startActionMode(mActionCallback);
+                                        is_action_mode = true;
+                                    }
                                     viewHolder.is_selected = true;
                                     viewHolder.itemView.setClickable(true);
-                                    activity.startActionMode(mActionCallback);
                                 }
                                 return true;
                             }
@@ -139,105 +169,33 @@ public class MessageUtil {
                                 viewHolder.messageImageView, viewHolder.messageTextView,
                                 activity);
 
-
-                        /*
-                        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-
-                                if (is_action_mode) {
-                                    if (viewHolder.is_selected) {
-                                        deselectMessage(view, getRef(position).getKey());
-                                        viewHolder.is_selected = false;
-                                    }
-                                    else {
-                                        view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                                        selectMessage(view, getRef(position).getKey());
-                                    }
-
-                                }
-                            }
-                        });
-                        */
-
-                        /*
-                        if (chatMessage.getPhotoUrl() == null) {
-                            viewHolder.messengerImageView
-                                    .setImageDrawable(ContextCompat
-                                            .getDrawable(activity,
-                                                    R.drawable.ic_account_circle_black_36dp));
-                        } else {
-                            SimpleTarget target = new SimpleTarget<Bitmap>() {
-                                @Override
-                                public void onResourceReady(Bitmap bitmap, GlideAnimation glideAnimation) {
-                                    viewHolder.messengerImageView.setImageBitmap(bitmap);
-                                }
-                            };
-                            Glide.with(activity)
-                                    .load(chatMessage.getPhotoUrl())
-                                    .asBitmap()
-                                    .into(target);
-                        }
-
-                        if (chatMessage.getImageUrl() != null) {
-                            //Set view visibilities for a image message
-                            viewHolder.messageImageView.setVisibility(View.VISIBLE);
-                            viewHolder.messageTextView.setVisibility(View.GONE);
-                            // load image for message
-                            try {
-                                final StorageReference gsReference =
-                                        sStorage.getReferenceFromUrl(chatMessage.getImageUrl());
-                                gsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                    @Override
-                                    public void onSuccess(Uri uri) {
-                                        Glide.with(activity)
-                                                .load(uri)
-                                                .into(viewHolder.messageImageView);
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception exception) {
-                                        Log.e(LOG_TAG, "Could not load image for message", exception);
-                                    }
-                                });
-                            } catch (IllegalArgumentException e) {
-                                viewHolder.messageTextView.setText("Error loading image");
-                                Log.e(LOG_TAG, e.getMessage() + " : " + chatMessage.getImageUrl());
-                            }
-                        } else {
-                            //Set view visibilities for a text message
-                            viewHolder.messageImageView.setVisibility(View.GONE);
-                            viewHolder.messageTextView.setVisibility(View.VISIBLE);
-                        }
-                        */
-
                     }
                 };
 
-        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 super.onItemRangeInserted(positionStart, itemCount);
-                int messageCount = adapter.getItemCount();
+                int messageCount = mAdapter.getItemCount();
                 int lastVisiblePosition = linearManager.findLastCompletelyVisibleItemPosition();
                 if (lastVisiblePosition == -1 ||
                         (positionStart >= (messageCount - 1) &&
                                 lastVisiblePosition == (positionStart - 1))) {
-                    recyclerView.scrollToPosition(lastVisiblePosition);
                 }
+                recyclerView.scrollToPosition(messageCount-1);
             }
         });
 
 
-        return adapter;
+        return mAdapter;
     }
 
-    public static void selectMessage(View view, String key, ChatMessage chatMessage) {
+    private static void selectMessage(View view, String key, ChatMessage chatMessage) {
         view.setBackgroundResource(R.color.selectedMessage);
         selectedMessages.put(key, chatMessage);
     }
 
-    public static void deselectMessage(View view, String key) {
+    private static void deselectMessage(View view, String key) {
         view.setBackgroundResource(0);
         selectedMessages.remove(key);
     }
@@ -246,10 +204,8 @@ public class MessageUtil {
     public static void displayImageMessage(String imageUrl, final ImageView messageImageView,
                                            TextView messageTextView, final Context context) {
         if (imageUrl != null) {
-            //Set view visibilities for a image message
             messageImageView.setVisibility(View.VISIBLE);
             messageTextView.setVisibility(View.GONE);
-            // load image for message
             try {
                 final StorageReference gsReference =
                         sStorage.getReferenceFromUrl(imageUrl);
@@ -329,6 +285,7 @@ public class MessageUtil {
 
                 case R.id.starMessage:
                     starMessages();
+                    mode.finish();
                     return true;
             }
 
@@ -339,6 +296,7 @@ public class MessageUtil {
         public void onDestroyActionMode(ActionMode mode) {
             Log.d(LOG_TAG, "Selection Done. Exiting action mode");
             is_action_mode = false;
+            mAdapter.notifyDataSetChanged();
         }
 
         public void starMessages() {
@@ -348,34 +306,6 @@ public class MessageUtil {
                 db.insertData(key, selectedMessages.get(key));
                 db.save();
             }
-
-
-
-            /*
-            SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-            Gson gson = new Gson();
-
-            ArrayList<ChatMessage> data = new ArrayList<>();
-            if(mPrefs.contains("Starred_Messages")) {
-                String json = mPrefs.getString("Starred_Messages", "");
-                data = gson.fromJson(json, ArrayList.class);
-
-                for (ChatMessage message : selectedMessages) {
-                    if (!data.contains(message))
-                        data.add(message);
-                }
-            }
-            else {
-                data = selectedMessages;
-            }
-
-            String json = gson.toJson(data);
-            SharedPreferences.Editor prefsEditor = mPrefs.edit();
-            prefsEditor.putString("Starred_Messages", json);
-            prefsEditor.commit();
-
-            Log.d(LOG_TAG, "Messages selected: " + json);
-            */
 
         }
 

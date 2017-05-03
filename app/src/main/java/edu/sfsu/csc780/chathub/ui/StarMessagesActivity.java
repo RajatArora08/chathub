@@ -45,32 +45,16 @@ public class StarMessagesActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.starred_messages);
+        setTitle("Starred Messages");
 
         List<ChatMessageDB> messageList = SQLite.select().
                 from(ChatMessageDB.class).queryList();
-
-
-        /*
-        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        Gson gson = new Gson();
-
-        if(mPrefs.contains("Starred_Messages")) {
-            String json = mPrefs.getString("Starred_Messages", "");
-//            Type type = new TypeToken<Map<String, ChatMessage>>(){}.getType();
-//            starredMessagesFromPref = gson.fromJson(json, ArrayList.class);
-            starredMessagesList = gson.fromJson(json, ArrayList.class);
-
-        }
-//        starredMessagesList = new ArrayList<ChatMessage>(starredMessagesFromPref.values());
-
-        */
 
         ListAdapter adapter = new StarMessageAdapter(getApplicationContext(), messageList);
         ListView listView = (ListView) findViewById(R.id.starred_messages_view);
         listView.setAdapter(adapter);
 
     }
-
 
     class StarMessageAdapter extends ArrayAdapter<ChatMessageDB> {
 

@@ -6,8 +6,8 @@
     <color name="colorTitle">#212121</color>
     <color name="colorNightMode">#000000</color>
     <color name="paintColor">#FFFFFF</color>
-    <color name="selectedMessage">#60acef</color>
-
+    <color name="selectedMessage">#d6dce1</color>
+    <color name="myMessage">#8fd791</color>
 
     <color name="color_1">#FF1CDF22</color>
     <color name="color_2">#FF1A32CF</color>
