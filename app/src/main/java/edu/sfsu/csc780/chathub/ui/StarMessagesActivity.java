@@ -77,9 +77,11 @@ public class StarMessagesActivity extends AppCompatActivity {
             CircleImageView messengerImageView =
                     (CircleImageView) view.findViewById(R.id.messengerImageView);
             ImageView messageImageView = (ImageView) view.findViewById(R.id.messageImageView);
+            TextView messsageTimeView = (TextView) view.findViewById(R.id.messsageTime);
 
             messengerTextView.setText(message.getName());
             messageTextView.setText(message.getText());
+            messsageTimeView.setText(message.getDate());
 
             MessageUtil.displayPhotoURL(messengerImageView, message.getPhotoUrl(), mContext);
             MessageUtil.displayImageMessage(message.getImageUrl(),

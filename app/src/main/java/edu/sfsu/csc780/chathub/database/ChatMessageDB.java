@@ -1,12 +1,14 @@
 package edu.sfsu.csc780.chathub.database;
 
 import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.Database;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import java.util.ArrayList;
 
+import edu.sfsu.csc780.chathub.DateUtil;
 import edu.sfsu.csc780.chathub.model.ChatMessage;
 
 /**
@@ -32,12 +34,16 @@ public class ChatMessageDB extends BaseModel {
     @Column
     private String imageUrl;
 
+    @Column
+    private String date;
+
     public void insertData(String uid, ChatMessage message) {
         this.uid = uid;
         this.text = message.getText();
         this.name = message.getName();
         this.photoUrl = message.getPhotoUrl();
         this.imageUrl = message.getImageUrl();
+        this.date = DateUtil.toLocalTime(message.getTimeStamp());
     }
 
     public String getUid() {
@@ -78,5 +84,13 @@ public class ChatMessageDB extends BaseModel {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }
