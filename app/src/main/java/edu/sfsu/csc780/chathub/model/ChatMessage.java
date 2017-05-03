@@ -15,12 +15,15 @@
  */
 package edu.sfsu.csc780.chathub.model;
 
+import java.util.Date;
+
 public class ChatMessage {
 
     private String text;
     private String name;
     private String photoUrl;
     private String imageUrl;
+    private Date timeStamp;
 
     public ChatMessage() {
 
@@ -36,6 +39,8 @@ public class ChatMessage {
         this(text, name, photoUrl);
         this.imageUrl = imageUrl;
     }
+
+
 
     public String getImageUrl() {
         return imageUrl;
@@ -68,5 +73,13 @@ public class ChatMessage {
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+    }
+
+    public Date getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(Date timeStamp) {
+        this.timeStamp = timeStamp;
     }
 }

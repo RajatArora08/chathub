@@ -2,10 +2,8 @@ package edu.sfsu.csc780.chathub;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,9 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -36,22 +32,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import edu.sfsu.csc780.chathub.database.ChatMessageDB;
 import edu.sfsu.csc780.chathub.model.ChatMessage;
-import edu.sfsu.csc780.chathub.ui.MainActivity;
-
-import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by cjkriese on 2/17/17.
@@ -73,6 +60,7 @@ public class MessageUtil {
     public interface MessageLoadListener { public void onLoadComplete(); }
 
     public static void send(ChatMessage chatMessage) {
+        chatMessage.setTimeStamp(DateUtil.getUTCTime());
         sFirebaseDatabaseReference.child(MESSAGES_CHILD).push().setValue(chatMessage);
     }
 
@@ -81,6 +69,7 @@ public class MessageUtil {
         public TextView messengerTextView;
         public CircleImageView messengerImageView;
         public ImageView messageImageView;
+        public TextView messsageTimeView;
         public boolean is_selected = false;
 
         public MessageViewHolder(View v) {
@@ -90,6 +79,7 @@ public class MessageUtil {
             messengerImageView =
                     (CircleImageView) itemView.findViewById(R.id.messengerImageView);
             messageImageView = (ImageView) itemView.findViewById(R.id.messageImageView);
+            messsageTimeView = (TextView) itemView.findViewById(R.id.messsageTime);
 
         }
     }
@@ -109,28 +99,24 @@ public class MessageUtil {
 
                     @Override
                     public MessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
                         View view;
-
-                        if (viewType == 1) {
+                        if (viewType == 1)
                             view = LayoutInflater.from(mContext).inflate(R.layout.item_message_me, parent, false);
-                        }
-                        else {
+                        else
                             view = LayoutInflater.from(mContext).inflate(R.layout.item_message, parent, false);
-                        }
-
                         return new MessageViewHolder(view);
                     }
 
                     @Override
                     public int getItemViewType(int position) {
                         if (FirebaseAuth.getInstance().getCurrentUser().getDisplayName()
-                                .equals(getItem(position).getName())){
+                                .equals(getItem(position).getName()))
                             return 1;
-                        }
-                        else return 2;
-
+                        else
+                            return 2;
                     }
+
+
 
                     @Override
                     protected void populateViewHolder(final MessageViewHolder viewHolder,
@@ -139,6 +125,8 @@ public class MessageUtil {
                         sAdapterListener.onLoadComplete();
                         viewHolder.messageTextView.setText(chatMessage.getText());
                         viewHolder.messengerTextView.setText(chatMessage.getName());
+                        if (chatMessage.getTimeStamp() != null)
+                            viewHolder.messsageTimeView.setText(DateUtil.toLocalTime(chatMessage.getTimeStamp()));
 
                         viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener(){
 
@@ -168,7 +156,6 @@ public class MessageUtil {
                         displayImageMessage(chatMessage.getImageUrl(),
                                 viewHolder.messageImageView, viewHolder.messageTextView,
                                 activity);
-
                     }
                 };
 
@@ -185,7 +172,6 @@ public class MessageUtil {
                 recyclerView.scrollToPosition(messageCount-1);
             }
         });
-
 
         return mAdapter;
     }
@@ -227,7 +213,6 @@ public class MessageUtil {
                 Log.e(LOG_TAG, e.getMessage() + " : " + imageUrl);
             }
         } else {
-            //Set view visibilities for a text message
             messageImageView.setVisibility(View.GONE);
             messageTextView.setVisibility(View.VISIBLE);
         }
@@ -296,7 +281,8 @@ public class MessageUtil {
         public void onDestroyActionMode(ActionMode mode) {
             Log.d(LOG_TAG, "Selection Done. Exiting action mode");
             is_action_mode = false;
-            mAdapter.notifyDataSetChanged();
+//            mAdapter.notifyDataSetChanged();
+            mAdapter.notifyItemRangeChanged(0, mAdapter.getItemCount());
         }
 
         public void starMessages() {
@@ -306,6 +292,8 @@ public class MessageUtil {
                 db.insertData(key, selectedMessages.get(key));
                 db.save();
             }
+
+            selectedMessages.clear();
 
         }
 

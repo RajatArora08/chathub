@@ -27,27 +27,45 @@
                 android:id="@+id/messageTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
                 android:gravity="right|end"
+                android:visibility="visible"
                 android:textAppearance="?android:attr/textAppearanceLarge"/>
 
             <ImageView
                 android:id="@+id/messageImageView"
-                android:layout_width="fill_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="100dp"
                 android:layout_marginTop="10dp"
                 android:scaleType="fitStart"
                 android:visibility="gone"
+                android:layout_gravity="right|end"
                 tools:src="@drawable/ic_image_black_24px"
                 tools:visibility="visible"/>
 
-            <TextView
-                android:id="@+id/messengerTextView"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:gravity="right|end"
-                android:textAppearance="?android:attr/textAppearanceSmall"/>
+                android:gravity="end"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/messsageTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="right|end"
+                    android:text="Time here"/>
+
+                <TextView
+                    android:id="@+id/messengerTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="right|end"
+                    android:layout_marginStart="10dp"
+                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+            </LinearLayout>
+
+
 
         </LinearLayout>
 
