@@ -2,25 +2,26 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item
+        android:id="@+id/background_change_menu"
+        android:title="@string/change_background"
+        android:icon="?attr/backgroundButtonStyle"
+        app:showAsAction="always"/>
+
     <item android:id="@+id/star_message"
         android:title="@string/star_messages"
         android:icon="?attr/starMessage"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/change_mode_menu"
         android:title="@string/change_mode"
         android:icon="?attr/changeModeStyle"
-        app:showAsAction="ifRoom"/>
-
-    <item
-        android:id="@+id/background_change_menu"
-        android:title="@string/change_background"
-        android:icon="?attr/backgroundButtonStyle"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/sign_out_menu"
         android:title="@string/sign_out"
         app:showAsAction="never"/>
+
 </menu>

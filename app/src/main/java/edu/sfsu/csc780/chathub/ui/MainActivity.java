@@ -82,17 +82,14 @@ public class MainActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener, MessageUtil.MessageLoadListener, PopupMenu.OnMenuItemClickListener {
 
     private static final String TAG = "MainActivity";
-    public static final String MESSAGES_CHILD = "messages";
-    private static final int REQUEST_INVITE = 1;
     public static final int MSG_LENGTH_LIMIT = 50;
     public static final String ANONYMOUS = "anonymous";
     private static final int REQUEST_PICK_IMAGE = 1;
+
     private String mUsername;
     private String mPhotoUrl;
     private SharedPreferences mSharedPreferences;
     private GoogleApiClient mGoogleApiClient;
-    public static boolean action_mode = false;
-
     private FloatingActionButton mSendButton;
     private RecyclerView mMessageRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
@@ -109,7 +106,7 @@ public class MainActivity extends AppCompatActivity
             mFirebaseAdapter;
     private ImageButton mImageButton;
     private ImageButton mMicButton;
-    int dayNightMode;
+    private static int mDayNightMode;
     public static final int RESULT_SPEECH = 200;
     private static final int REQUEST_PICK_WALLPAPER = 300;
     private static final int RESULT_PAINT = 400;
@@ -119,15 +116,18 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        dayNightMode = AppCompatDelegate.getDefaultNightMode();
-        if (dayNightMode == AppCompatDelegate.MODE_NIGHT_AUTO) {
+        mDayNightMode = AppCompatDelegate.getDefaultNightMode();
+        int foo = AppCompatDelegate.getDefaultNightMode();
+        if (mDayNightMode == AppCompatDelegate.MODE_NIGHT_AUTO ||
+                mDayNightMode == AppCompatDelegate.MODE_NIGHT_NO) {
             setTheme(R.style.AppTheme);
         }
-        else if(dayNightMode == AppCompatDelegate.MODE_NIGHT_NO) {
-            setTheme(R.style.AppTheme);
-        }
-        else {
+        else if(mDayNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
             setTheme(R.style.AppThemeNight);
+        }
+
+        else {
+            setTheme(R.style.AppTheme);
         }
 
         setContentView(R.layout.activity_main);
@@ -327,13 +327,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void starMessages() {
-
-//        Toast.makeText(this, MessageUtil.selectedMessages.toString(), Toast.LENGTH_SHORT).show();
-
         Intent intent = new Intent(MainActivity.this, StarMessagesActivity.class);
-//        intent.putExtra("STAR_MESSAGES", MessageUtil.selectedMessages);
         startActivity(intent);
-
     }
 
     private void showWallpaperMenu () {
@@ -364,8 +359,9 @@ public class MainActivity extends AppCompatActivity
 
     private void switchMode() {
 
-        if (dayNightMode == AppCompatDelegate.MODE_NIGHT_AUTO ||
-                dayNightMode == AppCompatDelegate.MODE_NIGHT_NO ) {
+        if (mDayNightMode == AppCompatDelegate.MODE_NIGHT_AUTO ||
+                mDayNightMode == AppCompatDelegate.MODE_NIGHT_NO ||
+                mDayNightMode == -1) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
         else {
@@ -416,25 +412,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void pickImage(int requestCode) {
-        // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file browser
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-
-        // Filter to only show results that can be "opened"
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-
-        // Filter to show only images, using the image MIME data type.
         intent.setType("image/*");
-
         startActivityForResult(intent, requestCode);
-
     }
 
     private void loadmap() {
 
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
-
         mLocationButton.setEnabled(false);
-
 
         Loader<Bitmap> loader = getSupportLoaderManager().initLoader(0, null,
             new LoaderManager.LoaderCallbacks<Bitmap>() {
@@ -476,7 +463,6 @@ public class MainActivity extends AppCompatActivity
                 }
 
             });
-
 
         loader.forceLoad();
 

@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -40,17 +41,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import edu.sfsu.csc780.chathub.database.ChatMessageDB;
 import edu.sfsu.csc780.chathub.model.ChatMessage;
 
-/**
- * Created by cjkriese on 2/17/17.
- */
-
 public class MessageUtil {
     private static final String LOG_TAG = MessageUtil.class.getSimpleName();
     public static final String MESSAGES_CHILD = "messages";
 
     private static DatabaseReference sFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
     private static MessageLoadListener sAdapterListener;
-    private static FirebaseAuth sFirebaseAuth;
     private static FirebaseStorage sStorage = FirebaseStorage.getInstance();
     public static HashMap<String, ChatMessage> selectedMessages = new HashMap<>();
     private static boolean is_action_mode = false;
@@ -64,13 +60,13 @@ public class MessageUtil {
         sFirebaseDatabaseReference.child(MESSAGES_CHILD).push().setValue(chatMessage);
     }
 
-    public static class MessageViewHolder extends RecyclerView.ViewHolder {
+    public static class MessageViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView messageTextView;
         public TextView messengerTextView;
         public CircleImageView messengerImageView;
         public ImageView messageImageView;
         public TextView messsageTimeView;
-        public boolean is_selected = false;
+        public LinearLayout linearLayout;
 
         public MessageViewHolder(View v) {
             super(v);
@@ -80,8 +76,33 @@ public class MessageUtil {
                     (CircleImageView) itemView.findViewById(R.id.messengerImageView);
             messageImageView = (ImageView) itemView.findViewById(R.id.messageImageView);
             messsageTimeView = (TextView) itemView.findViewById(R.id.messsageTime);
-
+            linearLayout = (LinearLayout) itemView.findViewById(R.id.singleMessageLL);
+            linearLayout.setOnClickListener(this);
         }
+
+
+        @Override
+        public void onClick(View v) {
+            if(is_action_mode)
+                processSelection(v, getAdapterPosition());
+        }
+    }
+
+    public static void processSelection(View v, int pos) {
+        String key = mAdapter.getRef(pos).getKey();
+
+        if(!(boolean)v.getTag()) {
+            v.setBackgroundResource(R.color.selectedMessage);
+            selectedMessages.put(key, (ChatMessage) mAdapter.getItem(pos));
+            v.setTag(true);
+        }
+        else
+        {
+            selectedMessages.remove(key);
+            v.setBackgroundResource(0);
+            v.setTag(false);
+        }
+
     }
 
     public static FirebaseRecyclerAdapter getFirebaseAdapter(final Activity activity,
@@ -116,8 +137,6 @@ public class MessageUtil {
                             return 2;
                     }
 
-
-
                     @Override
                     protected void populateViewHolder(final MessageViewHolder viewHolder,
                                                       ChatMessage chatMessage, final int position) {
@@ -128,26 +147,23 @@ public class MessageUtil {
                         if (chatMessage.getTimeStamp() != null)
                             viewHolder.messsageTimeView.setText(DateUtil.toLocalTime(chatMessage.getTimeStamp()));
 
-                        viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener(){
+                        if (viewHolder.linearLayout.getTag() == null)
+                            viewHolder.linearLayout.setTag(false);
+                        if (!(boolean)viewHolder.linearLayout.getTag())
+                            viewHolder.linearLayout.setBackgroundResource(0);
+                        viewHolder.linearLayout.setClickable(true);
+
+                        viewHolder.linearLayout.setOnLongClickListener(new View.OnLongClickListener(){
 
                             @Override
                             public boolean onLongClick(View view) {
 
-                                if (viewHolder.is_selected) {
-                                    deselectMessage(view, getRef(position).getKey());
-                                    viewHolder.is_selected = false;
-                                }
-                                else
-                                {
-                                    selectMessage(view, getRef(position).getKey(), getItem(position));
+                                if(!is_action_mode) {
                                     view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                                    if(!is_action_mode) {
-                                        activity.startActionMode(mActionCallback);
-                                        is_action_mode = true;
-                                    }
-                                    viewHolder.is_selected = true;
-                                    viewHolder.itemView.setClickable(true);
+                                    activity.startActionMode(mActionCallback);
+                                    is_action_mode = true;
                                 }
+
                                 return true;
                             }
                         });
@@ -174,16 +190,6 @@ public class MessageUtil {
         });
 
         return mAdapter;
-    }
-
-    private static void selectMessage(View view, String key, ChatMessage chatMessage) {
-        view.setBackgroundResource(R.color.selectedMessage);
-        selectedMessages.put(key, chatMessage);
-    }
-
-    private static void deselectMessage(View view, String key) {
-        view.setBackgroundResource(0);
-        selectedMessages.remove(key);
     }
 
 
@@ -240,7 +246,6 @@ public class MessageUtil {
 
 
     public static StorageReference getImageStorageReference(FirebaseUser user, Uri uri) {
-        //Create a blob storage reference with path : bucket/userId/timeMs/filename
         long nowMs = Calendar.getInstance().getTimeInMillis();
 
         return sStorage.getReference().child(user.getUid() + "/" + nowMs + "/" + uri
@@ -251,7 +256,7 @@ public class MessageUtil {
     public static ActionMode.Callback mActionCallback = new ActionMode.Callback() {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            mode.setTitle("Options");
+            mode.setTitle("Click to select");
 
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.context_action_bar, menu);
@@ -281,8 +286,7 @@ public class MessageUtil {
         public void onDestroyActionMode(ActionMode mode) {
             Log.d(LOG_TAG, "Selection Done. Exiting action mode");
             is_action_mode = false;
-//            mAdapter.notifyDataSetChanged();
-            mAdapter.notifyItemRangeChanged(0, mAdapter.getItemCount());
+            mAdapter.notifyDataSetChanged();
         }
 
         public void starMessages() {
