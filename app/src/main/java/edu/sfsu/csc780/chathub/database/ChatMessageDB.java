@@ -13,6 +13,9 @@ import edu.sfsu.csc780.chathub.model.ChatMessage;
 
 /**
  * Created by rajatar08 on 4/30/17.
+ *
+ * This class is the DB model for saving starred messages in SQL.
+ * Uses DBFlow annotations
  */
 
 @Table(database = BaseDatabase.class)

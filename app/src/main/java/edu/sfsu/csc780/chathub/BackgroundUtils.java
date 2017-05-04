@@ -12,10 +12,18 @@ import java.io.ByteArrayOutputStream;
 
 /**
  * Created by rajatar08 on 4/17/17.
+ *
+ * Util class for handling Background operations
  */
 
 public class BackgroundUtils {
 
+    /**
+     * Saves input URI in SharedPreferences
+     *
+     * @param activity
+     * @param uri
+     */
     public static void saveWallpaper(Activity activity, Uri uri) {
 
         String file = "wallpaper";

@@ -283,6 +283,9 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
     }
 
+    /**
+     * Application falls back into a service, with a floating widget overlayed on the screen
+     */
     @Override
     public void onBackPressed() {
 
@@ -399,6 +402,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Sends an intent for Speech to Text
+     */
     private void speechProcess() {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US");

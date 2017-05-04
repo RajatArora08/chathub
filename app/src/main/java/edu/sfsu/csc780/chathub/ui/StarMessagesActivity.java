@@ -37,6 +37,9 @@ import edu.sfsu.csc780.chathub.model.ChatMessage;
 
 /**
  * Created by rajatar08 on 4/26/17.
+ *
+ * This class is the Activity for Starred Messages View that
+ * displays all the messages marked as starred
  */
 
 public class StarMessagesActivity extends AppCompatActivity {

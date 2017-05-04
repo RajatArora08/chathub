@@ -118,6 +118,12 @@ public class MessageUtil {
                         MessageViewHolder.class,
                         sFirebaseDatabaseReference.child(MESSAGES_CHILD)) {
 
+                    /**
+                     * Overidden to handle layouts depending on the type of message
+                     * @param parent
+                     * @param viewType
+                     * @return
+                     */
                     @Override
                     public MessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                         View view;
@@ -128,6 +134,12 @@ public class MessageUtil {
                         return new MessageViewHolder(view);
                     }
 
+                    /**
+                     * Overidden this class to differentiate messages from user and sender
+                     *
+                     * @param position
+                     * @return
+                     */
                     @Override
                     public int getItemViewType(int position) {
                         if (FirebaseAuth.getInstance().getCurrentUser().getDisplayName()
@@ -252,6 +264,10 @@ public class MessageUtil {
                 .getLastPathSegment());
     }
 
+    /**
+     * ActionMode enables when a message is long pressed.
+     *
+     */
 
     public static ActionMode.Callback mActionCallback = new ActionMode.Callback() {
         @Override

@@ -18,6 +18,8 @@ import edu.sfsu.csc780.chathub.ImageUtil;
 
 /**
  * Created by rajatar08 on 4/17/17.
+ *
+ * This class is a Custom View Class for the Blank paint Canvas
  */
 
 public class PaintScreenView extends View {

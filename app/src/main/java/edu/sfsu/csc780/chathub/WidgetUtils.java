@@ -9,6 +9,8 @@ import android.provider.Settings;
 
 /**
  * Created by rajatar08 on 4/30/17.
+ *
+ * Utils class to handle floating widget operations.
  */
 
 public class WidgetUtils {
@@ -19,7 +21,10 @@ public class WidgetUtils {
     private static String SYSTEM_ALERT_WINDOW = android.Manifest.permission.SYSTEM_ALERT_WINDOW;
     public static final int REQUEST_CODE = 2086;
 
-
+    /**
+     * Prompts for Screen Overlay permissions
+     * @param activity
+     */
     public static void checkScreenOverlayPermission(Activity activity) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(activity)) {

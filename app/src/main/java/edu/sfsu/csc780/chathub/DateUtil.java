@@ -7,6 +7,9 @@ import java.util.TimeZone;
 
 /**
  * Created by rajatar08 on 5/3/17.
+ *
+ * Util methods to assist in handling Date operations
+ *
  */
 
 public class DateUtil {

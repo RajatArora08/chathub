@@ -22,6 +22,8 @@ import edu.sfsu.csc780.chathub.R;
 
 /**
  * Created by rajatar08 on 4/17/17.
+ *
+ * This class is the Activity for Paint view
  */
 
 public class PaintActivity extends AppCompatActivity {
@@ -46,11 +48,20 @@ public class PaintActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * On click callback method for clearing canvas.
+     * @param view
+     */
     public void clearCanvas(View view) {
 
         mPaintScreenView.clearCanvas();
 
     }
+
+    /**
+     * On click callback method to send painted image
+     * @param view
+     */
 
     public void sendCanvasImage(View view) {
 
@@ -67,8 +78,12 @@ public class PaintActivity extends AppCompatActivity {
         finish();
     }
 
-    public void colorDialog(MenuItem item) {
 
+    /**
+     * This method populates a dialog box from Spectrum
+     * @param item
+     */
+    public void colorDialog(MenuItem item) {
 
         new SpectrumDialog.Builder(this)
                 .setColors(R.array.demo_colors)

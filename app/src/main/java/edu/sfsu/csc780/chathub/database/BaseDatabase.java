@@ -4,6 +4,7 @@ import com.raizlabs.android.dbflow.annotation.Database;
 
 /**
  * Created by rajatar08 on 4/30/17.
+ * Base Database class for DBFlow
  */
 
 @Database(name = BaseDatabase.NAME, version = BaseDatabase.VER)
