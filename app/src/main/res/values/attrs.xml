@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="micButtonStyle" format="reference"/>
+    <attr name="locButtonStyle" format="reference"/>
+    <attr name="imageButtonStyle" format="reference"/>
+    <attr name="sendButtonStyle" format="reference"/>
+    <attr name="backgroundButtonStyle" format="reference"/>
+    <attr name="changeModeStyle" format="reference"/>
+    <attr name="canvasStyle" format="reference"/>
+    <attr name="starMessage" format="reference"/>
+
+</resources>

@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">ChatHub2.0</string>
+    <string name="welcome_msg">Welcome!</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="contacts_permission_rationale">Access to account information is required to sign in.</string>
+    <string name="sign_in">Sign In</string>
+    <string name="background_change">Change Background</string>
+    <string name="change_background">Change background</string>
+    <string name="change_mode">Day/Night Mode</string>
+    <string name="choose_wallpaper">Choose from Images</string>
+    <string name="reset_wallpaper">Remove Wallpaper</string>
+    <string name="choose_color">Choose color</string>
+    <string name="star_message">Star message</string>
+    <string name="star_messages">Star messages</string>
+</resources>

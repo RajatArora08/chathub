@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/chooseWallpaper"
+        android:title="@string/choose_wallpaper" />
+    <item android:id="@+id/resetWallpaper"
+        android:title="@string/reset_wallpaper" />
+</menu>
