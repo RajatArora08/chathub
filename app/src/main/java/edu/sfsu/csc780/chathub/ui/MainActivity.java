@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
 
-    private FirebaseRecyclerAdapter<ChatMessage, MessageUtil.MessageViewHolder>
+    public FirebaseRecyclerAdapter<ChatMessage, MessageUtil.MessageViewHolder>
             mFirebaseAdapter;
     private ImageButton mImageButton;
     private ImageButton mMicButton;

@@ -16,19 +16,24 @@
 
 package edu.sfsu.csc780.chathub;
 
+import android.content.Intent;
+import android.os.SystemClock;
+import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.LargeTest;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.Random;
 
 import edu.sfsu.csc780.chathub.ui.MainActivity;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.longClick;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -42,16 +47,47 @@ public class MainActivityEspressoTest {
     public ActivityTestRule<MainActivity> mActivityRule =
             new ActivityTestRule<>(MainActivity.class);
 
-    // Add instrumentation test here
-    @Test
-    public void ensureMessageFieldClearsAfterSend() {
-        // Use a ViewMatcher withId() to get the correct view and use a ViewAction typeText()
-        onView(withId(R.id.messageEditText)).perform(typeText("Testing 1, 2, 3"), closeSoftKeyboard());
 
-        // Use ViewMatcher withId() again and the ViewAction click()
+    /**
+     * This method sends a random messages, then clicks on star message.
+     * Once it is marked as starred message, oot then goes to the starres message
+     * activity and tests if the random message is present there or not.
+     *
+     */
+    @Test
+    public void verifyStarredMessage() {
+        MainActivity activity = mActivityRule.launchActivity(new Intent());
+
+        String randomMessage = getRandomMessage();
+
+        onView(withId(R.id.messageEditText)).perform(typeText(randomMessage), closeSoftKeyboard());
         onView(withId(R.id.sendButton)).perform(click());
 
-         //Again use withId() matcher, but now use ViewAssertion matches() to verify state of view
-         onView(withId(R.id.messageEditText)).check(matches(withText("")));
-        }
+        // Included to give time for RecyclerView to load before selection.
+        // (Not the best approach)
+        SystemClock.sleep(3000);
+
+        int lastPos = activity.mFirebaseAdapter.getItemCount() - 1;
+        onView(withId(R.id.messageRecyclerView))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(lastPos, longClick()));
+
+        onView(withId(R.id.messageRecyclerView))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(lastPos, click()));
+
+        onView(withId(R.id.starMessage))
+                .perform(click());
+
+        // Start star message activity
+        onView(withId(R.id.star_message)).perform(click());
+
+        onView(withText(randomMessage))
+                .check(matches(withText(randomMessage)));
+
+    }
+
+    public String getRandomMessage() {
+        Random random = new Random();
+        int randomNumber = random.nextInt();
+        return "Random message: " + randomNumber;
+    }
 }
